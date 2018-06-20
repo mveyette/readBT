@@ -23,6 +23,8 @@ from readBT import readBT
 wave, flam = readBT('lte3000-5.28-M-1.00-A+0.40-C+0.35-O+0.89.txt.xz', R=2500, waverange=[2.0,2.5], npix=10)
 ```
 
+**NOTE** If reading in France's models or other PHOENIX models, you must set `DF=-8.0` or else the flux units will be wrong.
+
 ## parseBT
 This function parses the filename of a model (or list of filenames) and returns a record array with the parameters of the model(s).
 
