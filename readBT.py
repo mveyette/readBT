@@ -6,7 +6,7 @@ import time
 from scipy.ndimage.filters import maximum_filter, uniform_filter
 from findFile import findFile
 import os
-import astropy.io.fits as fits
+from astropy.io import fits
 import re
    
 def parseBT(files):
@@ -16,19 +16,23 @@ def parseBT(files):
     Output - recarray with parameters: teff, logg, mh, am, c, o, ano (if avail)
     """
     
-    if np.size(files) == 1:
+    if len(np.shape(files)) == 0:
         files = [files]
         
     files = [os.path.basename(file) for file in files]        
-    params = np.recarray(len(files), dtype=[('teff',float), ('logg',float), ('mh',float), ('am',float), ('c',float), ('o',float), ('ano',float)])
+    params = np.recarray(len(files), dtype=[('teff',float), ('logg',float),
+             ('mh',float), ('am',float), ('c',float), ('o',float), ('ano',float)])
 
     for i, file in enumerate(files):
         match = re.match(r'lte(\d*)-(\d*.\d*)-M([+?,-?]\d*.\d*)-A([+?,-?]\d*.\d*)-C([+?,-?]\d*.\d*)-O([+?,-?]\d*.\d*)-ANO([+?,-?]\d*.\d*)\..*', file)
         if match:
-            params[i] = np.array(match.expand(r'\1 \2 \3 \4 \5 \6 \7').split(), dtype=float)
+            params[i] = tuple([float(val) for val in match.expand(r'\1 \2 \3 \4 \5 \6 \7').split()])
         else:
             match = re.match(r'lte(\d*)-(\d*.\d*)-M([+?,-?]\d*.\d*)-A([+?,-?]\d*.\d*)-C([+?,-?]\d*.\d*)-O([+?,-?]\d*.\d*)\..*', file)
-            params[i] = np.array(match.expand(r'\1 \2 \3 \4 \5 \6 0').split(), dtype=float)
+            if match:
+                params[i] = tuple([float(val) for val in match.expand(r'\1 \2 \3 \4 \5 \6 0').split()])
+            else:
+                raise ValueError('File name not in an expected format')
         
     return params
 
@@ -91,8 +95,8 @@ def parseBT_old(files):
     
     return params
     
-def readBT(file, R=None, npix=3.0, samp=2.5E7, waverange=None, air=False, verbose=False,
-           wave=None, flam=None):
+def readBT(file, R=None, npix=3.0, samp=2.5E7, waverange=None, air=False, DF=0.0,
+           verbose=False, wave=None, flam=None):
     """
     Returns wavelength in Angstroms and flux in erg s^-1 cm^-2 A^-1
     
@@ -103,6 +107,7 @@ def readBT(file, R=None, npix=3.0, samp=2.5E7, waverange=None, air=False, verbos
     samp - sampling to interpolate wavelength grid to for convolution, must be higher than original sampling
     waverange - two-element array with start and end wavelengths of output ***IN MICRONS***
     air  - set to True to convert output wavelengths from vacuum to air
+    DF   - logarithmic offset, 0.0 for Veyette models, -8.0 for other PHOENIX models
     verbose - set to True to print timing info
     wave - input wavelength array to process instead of reading in from file
     flam - input flux array to process instead of reading from file
@@ -149,8 +154,6 @@ def readBT(file, R=None, npix=3.0, samp=2.5E7, waverange=None, air=False, verbos
         for line in readin:
             wave.append(float(line[0]))
             flam.append(float(line[1]))
-            
-        DF = -8.0
             
         wave = np.array(wave)
         flam = 10.0**(np.array(flam) + DF)
