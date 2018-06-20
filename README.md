@@ -5,7 +5,7 @@ PHOENIX BT-Settl models can be downloaded from [France Allard's website](http://
 The most useful functions are:
 
 ## readBT
-Function to read in synthetic spectra. Returns two arrays: wavelenght in Angstroms and flux in erg s^-1 cm^-2 A^-1
+Function to read in synthetic spectra. Returns two arrays: wavelength in Angstroms and flux in erg s^-1 cm^-2 A^-1
 
 To read in the full model as is:
 ```python
@@ -17,7 +17,7 @@ print(flam)
 >>> [4.12952405e-95 4.12952405e-95 4.12952405e-95 ... 6.09817664e-06 6.08555231e-06 6.07295412e-06]
 ```
 
-This function can also convolved the model down to a desired resolution. However, make sure to set a wavelength range in microns withe the `waverange` keyword or else it will take a VERY long time to process the whole spectum. You can also use `npix` toset the desired sampling per resolution element of the output.
+This function can also convolved the model down to a desired resolution. However, make sure to set a wavelength range in microns withe the `waverange` keyword or else it will take a VERY long time to process the whole spectum. You can also use `npix` to set the desired sampling per resolution element of the output.
 ```python
 from readBT import readBT
 wave, flam = readBT('lte3000-5.28-M-1.00-A+0.40-C+0.35-O+0.89.txt.xz', R=2500, waverange=[2.0,2.5], npix=10)
