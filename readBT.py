@@ -101,7 +101,7 @@ def readBT(file, R=None, npix=3.0, samp=2.5E7, waverange=None, air=False, DF=0.0
     Returns wavelength in Angstroms and flux in erg s^-1 cm^-2 A^-1
     
     Arguments
-    file - name of file to read from
+    file - name of file to read from, ignored if wave and flam are set
     R    - resolution to convolve spectrum to, default to not change resolution
     npix - number of pixels per resolution element of output spectrum, most spectrographs use 2-4
     samp - sampling to interpolate wavelength grid to for convolution, must be higher than original sampling
@@ -239,7 +239,7 @@ def readHusser(waveFile, flamFile, **kwargs):
     """
     Runs readBT on the Husser files.
     """
-    return readBT('', wave=fits.getdata(waveFile, 0), flam=1e-8*fits.getdata(flamFile, 0), **kwargs)
+    return readBT('', wave=fits.getdata(waveFile, 0), flam=fits.getdata(flamFile, 0), DF=0.0, **kwargs)
     
 def getCont(flam, ss=65.0):
     """
