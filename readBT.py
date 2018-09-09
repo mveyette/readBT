@@ -4,7 +4,7 @@ import scipy.interpolate
 import scipy.signal
 import time
 from scipy.ndimage.filters import maximum_filter, uniform_filter
-from findFile import findFile
+from glob import glob
 import os
 from astropy.io import fits
 import re
@@ -107,7 +107,7 @@ def readBT(file, R=None, npix=3.0, samp=2.5E7, waverange=None, air=False, DF=0.0
     samp - sampling to interpolate wavelength grid to for convolution, must be higher than original sampling
     waverange - two-element array with start and end wavelengths of output ***IN MICRONS***
     air  - set to True to convert output wavelengths from vacuum to air
-    DF   - logarithmic offset, 0.0 for Veyette models, -8.0 for other PHOENIX models
+    DF   - logarithmic offset, 0.0 for Public Veyette models, -8.0 for other raw PHOENIX output
     verbose - set to True to print timing info
     wave - input wavelength array to process instead of reading in from file
     flam - input flux array to process instead of reading from file
@@ -277,7 +277,7 @@ def getMag(lam, flam):
     for i, file in enumerate(filterFiles):
         
         #Read in filter data
-        filtData = np.genfromtxt(findFile(file))
+        filtData = np.genfromtxt(glob(file)[0])
         filtLam = filtData[:,0]
         filtR   = filtData[:,1]
         
